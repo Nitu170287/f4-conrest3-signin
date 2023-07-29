@@ -11,29 +11,35 @@ const Signin = ({ setUser }) => {
   function handleLogin(e) {
     e.preventDefault();
 
-    fetch("https://dummyjson.com/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: userName,
-        password: password,
-      }),
-    })
-      .then(async (response) => {
-        console.log(response);
-        if (response.status === 200) {
-          console.log("success");
-          const userInfo = await response.json();
-          setUser(userInfo)
-          navigate("/profile");
-        } else {
-          setError(`${response.status}: ${response.statusText}`);
-        }
+    if(!userName || !password){
+      setError("All feilds are required")
+    }else{
+      fetch("https://dummyjson.com/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: userName,
+          password: password,
+        }),
       })
-      .catch((err) => {
-        console.error(err);
-        setError(err.message);
-      });
+        .then(async (response) => {
+          console.log(response);
+          if (response.status === 200) {
+            console.log("success");
+            const userInfo = await response.json();
+            setUser(userInfo)
+            navigate("/profile");
+          } else {
+            setError(`${response.status}: ${response.statusText || "Failed athentication"}`);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setError(err.message);
+        });
+    }
+
+    
   }
 
   return (
@@ -60,7 +66,7 @@ const Signin = ({ setUser }) => {
 
         <div className="forget-password-title">Forget your password?</div>
         <p style={{ color: "red", textAlign: "center" }}>
-          {error ? "Error Message/code:" + error : ""}
+          {error ?  error : ""}
         </p>
       </div>
 
